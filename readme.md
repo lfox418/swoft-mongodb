@@ -1,7 +1,7 @@
 # swoft mongo db pool
 
 ```
-composer require yumufeng/swoft-mongodb-pool
+composer require yumufeng/swoft-mongodb
 ```
 
 ## config 

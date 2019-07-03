@@ -50,7 +50,7 @@ class MongoDBConnection extends AbstractConnection
 
             $username = $poolConfig->getUserName();
             $password = $poolConfig->getPassword();
-            if (!empty($username) && !empty($password)){
+            if (!empty($username) && !empty($password)) {
                 $uri = sprintf(
                     'mongodb://%s:%s@%s:%d/%s',
                     $poolConfig->getUserName(),
@@ -59,7 +59,7 @@ class MongoDBConnection extends AbstractConnection
                     $poolConfig->getPort(),
                     $poolConfig->getDatabaseName()
                 );
-            }else{
+            } else {
                 $uri = sprintf(
                     'mongodb://%s:%d/%s',
                     $poolConfig->getHost(),
@@ -210,8 +210,38 @@ class MongoDBConnection extends AbstractConnection
     public function insert(string $namespace, array $data = [])
     {
         try {
-            $bulk = new BulkWrite($data);
+            $bulk = new BulkWrite();
             $insertId = (string)$bulk->insert($data);
+            $written = new WriteConcern(WriteConcern::MAJORITY, 1000);
+            $this->connection->executeBulkWrite($this->pool->getPoolConfig()->getDatabaseName() . '.' . $namespace, $bulk, $written);
+        } catch (\Exception $e) {
+            $insertId = false;
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
+        } finally {
+            $this->pool->release($this);
+            return $insertId;
+        }
+    }
+
+    /**
+     * 批量数据插入
+     * http://php.net/manual/zh/mongodb-driver-bulkwrite.insert.php
+     * $data = [
+                ['title' => 'one'],
+                ['_id' => 'custom ID', 'title' => 'two'],
+                ['_id' => new MongoDB\BSON\ObjectId, 'title' => 'three']
+       ];
+     * @param string $namespace
+     * @param array $data
+     * @return bool|string
+     */
+    public function insertAll(string $namespace, array $data = [])
+    {
+        try {
+            $bulk = new BulkWrite();
+            foreach ($data as $items) {
+                $insertId[] = (string)$bulk->insert($items);
+            }
             $written = new WriteConcern(WriteConcern::MAJORITY, 1000);
             $this->connection->executeBulkWrite($this->pool->getPoolConfig()->getDatabaseName() . '.' . $namespace, $bulk, $written);
         } catch (\Exception $e) {

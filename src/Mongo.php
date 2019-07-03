@@ -25,10 +25,10 @@ class Mongo
             $collection = self::getConnection();
             return $collection->executeQueryAll($namespace, $filter, $options);
         } catch (\Exception  $e) {
-            App::error($e->getFile().$e->getLine().$e->getMessage());
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
             return [];
         } catch (Exception $e) {
-            App::error($e->getFile().$e->getLine().$e->getMessage());
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
             return [];
         }
     }
@@ -52,11 +52,37 @@ class Mongo
             $collection = self::getConnection();
             return $collection->execQueryPagination($namespace, $limit, $currentPage, $filter, $options);
         } catch (\Exception  $e) {
-            App::error($e->getFile().$e->getLine().$e->getMessage());
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
             return [];
         } catch (Exception $e) {
-            App::error($e->getFile().$e->getLine().$e->getMessage());
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
             return [];
+        }
+    }
+
+    /**
+     * 批量插入
+     * @param $namespace
+     * @param array $data
+     * @return bool|string
+     * @throws \Swoft\Db\Exception\DbException
+     * @throws \Swoft\Exception\ConnectionException
+     * @throws MongoDBException
+     */
+    public static function insertAll($namespace, array $data)
+    {
+        if (count($data) == count($data, 1)) {
+            throw new  MongoDBException('data is can only be a two-dimensional array');
+        }
+        try {
+            /**
+             * @var $collection MongoDBConnection
+             */
+            $collection = self::getConnection();
+            return $collection->insertAll($namespace, $data);
+        } catch (MongoDBException $e) {
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
+            return false;
         }
     }
 
@@ -76,7 +102,7 @@ class Mongo
             $collection = self::getConnection();
             return $collection->insert($namespace, $data);
         } catch (\Exception $e) {
-            App::error($e->getFile().$e->getLine().$e->getMessage());
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
             return false;
         }
     }
@@ -98,7 +124,7 @@ class Mongo
             $collection = self::getConnection();
             return $collection->updateRow($namespace, $filter, $newObj);
         } catch (\Exception $e) {
-            App::error($e->getFile().$e->getLine().$e->getMessage());
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
             return false;
         }
     }
@@ -120,7 +146,7 @@ class Mongo
             $collection = self::getConnection();
             return $collection->updateColumn($namespace, $filter, $newObj);
         } catch (\Exception $e) {
-            App::error($e->getFile().$e->getLine().$e->getMessage());
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
             return false;
         }
     }
@@ -142,7 +168,7 @@ class Mongo
             $collection = self::getConnection();
             return $collection->delete($namespace, $filter, $limit);
         } catch (\Exception $e) {
-            App::error($e->getFile().$e->getLine().$e->getMessage());
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
             return false;
         }
     }
@@ -163,7 +189,7 @@ class Mongo
             $collection = self::getConnection();
             return $collection->count($namespace, $filter);
         } catch (\Exception $e) {
-            App::error($e->getFile().$e->getLine().$e->getMessage());
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
             return false;
         }
     }

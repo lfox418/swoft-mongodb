@@ -38,12 +38,24 @@ return [
 
 
 
-## useage
+# 使用案例
 
-```php
 \SwoftMongo\MongoDB\Mongo 下面的静态方法直接使用
 
-分页查询
+#### 查询
 
+```php
+
+```
+
+#### 分页查询
+```php
 $list = Mongo::fetchPagination('article', 10, 0, ['author' => $author]);
+```
+
+#### count统计
+
+```php
+$filter = ['isGroup' => "0", 'wechat' => '15584044700'];
+$count = Mongo::count('fans', $filter);
 ```

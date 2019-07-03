@@ -36,26 +36,70 @@ return [
     ]
 ```
 
-
-
 # 使用案例
 
 \SwoftMongo\MongoDB\Mongo 下面的静态方法直接使用
 
-#### 查询
+#### **tips:** 
+查询的值，是严格区分类型，string、int类型的哦
 
+### 新增
+
+单个添加
 ```php
-
+$insert = [
+            'account' => '',
+            'password' => ''
+];
+Mongo::insert('fans',$insert);
 ```
 
-#### 分页查询
+批量添加
+```php
+$insert = [
+            [
+                'account' => '',
+                'password' => ''
+            ],
+            [
+                'account' => '',
+                'password' => ''
+            ]
+];
+Mongo::insertAll('fans',$insert);
+```
+
+### 查询
+
+```php
+$where = ['account'=>'1112313423'];
+$result = Mongo::fetchAll('fans', $where);
+```
+
+### 分页查询
 ```php
 $list = Mongo::fetchPagination('article', 10, 0, ['author' => $author]);
 ```
 
-#### count统计
+### count统计
 
 ```php
 $filter = ['isGroup' => "0", 'wechat' => '15584044700'];
 $count = Mongo::count('fans', $filter);
+```
+
+### 更新
+```php
+$where = ['account'=>'1112313423'];
+$updateData = [];
+
+Mongo::updateColumn('fans', $where,$updateData); // 只更新数据满足$where的行的列信息中在$newObject中出现过的字段
+Mongo::updateRow('fans',$where,$updateData);// 更新数据满足$where的行的信息成$newObject
+```
+### 删除
+
+```php
+$where = ['account'=>'1112313423'];
+$all = true; // 为false只删除匹配的一条，true删除多条
+Mongo::delete('fans',$where,$all);
 ```

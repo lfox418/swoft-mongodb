@@ -391,6 +391,34 @@ class MongoDBConnection extends AbstractConnection
     }
 
     /**
+     * 获取collection 中满足条件的条数
+     *
+     * @param string $namespace
+     * @param array $filter
+     * @return bool
+     */
+    public function command(string $namespace, array $filter = [])
+    {
+        try {
+            $command = new Command([
+                'aggregate' => 'collection',
+                'pipeline' => $filter
+            ]);
+            $cursor = $this->connection->executeCommand($this->pool->getPoolConfig()->getDatabaseName(). '.' . $namespace, $command);
+            $count = $cursor->toArray()[0]->n;
+            return $count;
+        } catch (\Exception $e) {
+            $count = false;
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
+        } catch (Exception $e) {
+            $count = false;
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
+        } finally {
+            return $count;
+        }
+    }
+
+    /**
      * @param \Throwable $e
      * @return bool
      * @throws MongoDBException

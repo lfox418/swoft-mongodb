@@ -195,6 +195,25 @@ class Mongo
     }
 
     /**
+     * 聚合查询
+     * @param string $namespace
+     * @param array $filter
+     * @return bool
+     */
+    public static function command(string $namespace, array $filter = [])
+    {
+        try {
+            /**
+             * @var $collection MongoDBConnection
+             */
+            $collection = self::getConnection();
+            return $collection->command($namespace, $filter);
+        } catch (\Exception $e) {
+            App::error($e->getFile() . $e->getLine() . $e->getMessage());
+            return false;
+        }
+    }
+    /**
      * 获取一个当前的可用连接
      *
      * @throws \Exception

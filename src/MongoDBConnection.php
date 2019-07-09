@@ -227,10 +227,10 @@ class MongoDBConnection extends AbstractConnection
      * 批量数据插入
      * http://php.net/manual/zh/mongodb-driver-bulkwrite.insert.php
      * $data = [
-                ['title' => 'one'],
-                ['_id' => 'custom ID', 'title' => 'two'],
-                ['_id' => new MongoDB\BSON\ObjectId, 'title' => 'three']
-       ];
+     * ['title' => 'one'],
+     * ['_id' => 'custom ID', 'title' => 'two'],
+     * ['_id' => new MongoDB\BSON\ObjectId, 'title' => 'three']
+     * ];
      * @param string $namespace
      * @param array $data
      * @return bool|string
@@ -281,8 +281,9 @@ class MongoDBConnection extends AbstractConnection
                 ['multi' => true, 'upsert' => false]
             );
             $written = new WriteConcern(WriteConcern::MAJORITY, 1000);
-            $this->connection->executeBulkWrite($this->pool->getPoolConfig()->getDatabaseName() . '.' . $namespace, $bulk, $written);
-            $update = true;
+            $result = $this->connection->executeBulkWrite($this->pool->getPoolConfig()->getDatabaseName() . '.' . $namespace, $bulk, $written);
+            $modifiedCount = $result->getModifiedCount();
+            $update = $modifiedCount == 0 ? false : true;
         } catch (\Exception $e) {
             $update = false;
             App::error($e->getFile() . $e->getLine() . $e->getMessage());
@@ -320,8 +321,9 @@ class MongoDBConnection extends AbstractConnection
                 ['multi' => false, 'upsert' => false]
             );
             $written = new WriteConcern(WriteConcern::MAJORITY, 1000);
-            $this->connection->executeBulkWrite($this->pool->getPoolConfig()->getDatabaseName() . '.' . $namespace, $bulk, $written);
-            $update = true;
+            $result = $this->connection->executeBulkWrite($this->pool->getPoolConfig()->getDatabaseName() . '.' . $namespace, $bulk, $written);
+            $modifiedCount = $result->getModifiedCount();
+            $update = $modifiedCount == 1 ? true : false;
         } catch (\Exception $e) {
             $update = false;
             App::error($e->getFile() . $e->getLine() . $e->getMessage());

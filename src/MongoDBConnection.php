@@ -277,7 +277,7 @@ class MongoDBConnection extends AbstractConnection
             $bulk = new BulkWrite;
             $bulk->update(
                 $filter,
-                $newObj,
+                ['$set' => $newObj],
                 ['multi' => true, 'upsert' => false]
             );
             $written = new WriteConcern(WriteConcern::MAJORITY, 1000);

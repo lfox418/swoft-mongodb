@@ -194,11 +194,11 @@ class Mongo
         }
     }
 
+
     /**
      * 聚合查询
      * @param string $namespace
      * @param array $filter
-     * @return bool
      */
     public static function command(string $namespace, array $filter = [])
     {
@@ -213,6 +213,7 @@ class Mongo
             return false;
         }
     }
+
     /**
      * 获取一个当前的可用连接
      *

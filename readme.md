@@ -80,12 +80,6 @@ $result = Mongo::fetchAll('fans', $where);
 ```php
 $list = Mongo::fetchPagination('article', 10, 0, ['author' => $author]);
 ```
-
-### count统计
-
-```php
-$filter = ['isGroup' => "0", 'wechat' => '15584044700'];
-$count = Mongo::count('fans', $filter);
 ```
 
 ### 更新
@@ -102,4 +96,51 @@ Mongo::updateRow('fans',$where,$updateData);// 更新数据满足$where的行的
 $where = ['account'=>'1112313423'];
 $all = true; // 为false只删除匹配的一条，true删除多条
 Mongo::delete('fans',$where,$all);
+```
+
+### count统计
+
+```php
+$filter = ['isGroup' => "0", 'wechat' => '15584044700'];
+$count = Mongo::count('fans', $filter);
+```
+
+
+
+### Command，执行更复杂的mongo命令
+
+**sql** 和 **mongodb** 关系对比图
+
+|   SQL  | MongoDb |
+| --- | --- |
+|   WHERE  |  $match (match里面可以用and，or，以及逻辑判断，但是好像不能用where)  |
+|   GROUP BY  | $group  |
+|   HAVING  |  $match |
+|   SELECT  |  $project  |
+|   ORDER BY  |  $sort |
+|   LIMIT  |  $limit |
+|   SUM()  |  $sum |
+|   COUNT()  |  $sum |
+
+```php
+
+$pipeline= [
+            [
+                '$match' => $where
+            ], [
+                '$group' => [
+                    '_id' => [],
+                    'groupCount' => [
+                        '$sum' => '$groupCount'
+                    ]
+                ]
+            ], [
+                '$project' => [
+                    'groupCount' => '$groupCount',
+                    '_id' => 0
+                ]
+            ]
+];
+
+$count = Mongo::command('fans', $pipeline);
 ```
